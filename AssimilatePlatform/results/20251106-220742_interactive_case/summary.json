@@ -1,0 +1,32 @@
+{
+  "case_name": "interactive_case",
+  "inputs": {
+    "m": 0.4,
+    "YF": 0.04,
+    "YN": 0.002,
+    "X0": 0.002,
+    "V": 100.0,
+    "L": 60.0,
+    "L_factor": 1.5,
+    "HETP": 0.5,
+    "max_stages_cap": 300
+  },
+  "results": {
+    "Lmin": 38.775510204081634,
+    "L_used": 60.0,
+    "N_stair": 7,
+    "N_kremser": 7,
+    "N_used": 7,
+    "H_total_m": 3.5,
+    "absorbed_kmol_h": 3.8,
+    "L_out": 63.8,
+    "X1_mass_balance": 0.06144200626959248
+  },
+  "artifacts": {
+    "stage_data_csv": "stage_data.csv",
+    "stage_table_csv": "stage_table.csv",
+    "streams_csv": "streams.csv",
+    "mt_plot": "mt_plot.png",
+    "log": "log.txt"
+  }
+}

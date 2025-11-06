@@ -1,0 +1,7 @@
+[INFO] 2025-11-06T23:18:01.120361 === Absorption calculation started ===
+[INFO] 2025-11-06T23:18:01.121207 Config: {'m': 0.4, 'YF': 0.04, 'YN_target': 0.002, 'X0': 0.002, 'V': 100.0, 'L': 60.0, 'L_factor': 1.5, 'HETP': 0.5, 'max_stages_cap': 300, 'case_name': 'interactive_case', 'notes': '', 'plot': True}
+[INFO] 2025-11-06T23:18:01.121567 使用输入溶剂流量：L = 60.000000 (kmol/h), L/Lmin = 1.547
+[INFO] 2025-11-06T23:18:01.122255 stage_table.csv saved: results/20251106-231801_interactive_case/stage_table.csv
+[INFO] 2025-11-06T23:18:01.122947 summary.json saved.
+[INFO] 2025-11-06T23:18:01.679404 McCabe–Thiele plot saved: results/20251106-231801_interactive_case/mt_plot.png
+[INFO] 2025-11-06T23:18:01.679508 === Absorption calculation completed ===

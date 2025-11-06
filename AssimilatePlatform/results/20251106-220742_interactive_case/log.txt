@@ -1,0 +1,4 @@
+[INFO] 2025-11-06T22:07:42.334621 === Absorption calculation started ===
+[INFO] 2025-11-06T22:07:42.335499 使用输入 L = 60.000000 (L/Lmin = 1.547)
+[INFO] 2025-11-06T22:07:42.748968 McCabe–Thiele 图已保存: results/20251106-220742_interactive_case/mt_plot.png
+[INFO] 2025-11-06T22:07:42.749089 === Absorption calculation completed ===
