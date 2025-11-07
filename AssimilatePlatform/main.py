@@ -1,6 +1,6 @@
 import argparse, json
 from utils.io_utils import load_config_any
-from core import run_absorption  # ✅ 改为从 core 包导入（更简洁）
+from core import run_absorption 
 
 def parse_args():
     p = argparse.ArgumentParser(
@@ -18,7 +18,7 @@ def interactive_input():
         try:
             return float(s)
         except Exception:
-            print("  ⚠️ invalid number, using default.")
+            print("⚠️ invalid number, using default.")
             return float(default)
 
     print("\n=== Interactive Absorption Inputs ===")
