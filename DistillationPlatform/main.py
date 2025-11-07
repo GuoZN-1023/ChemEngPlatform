@@ -4,6 +4,7 @@ from core.special_models import azeotropic_modifier, extractive_modifier
 from core.multiple_effect import MultiEffectSystem
 from utils import create_result_folder, save_results, plot_mccabe_thiele
 
+
 # ========== 1️⃣ 模式选择 ==========
 print("🧪 请选择运行模式：")
 print("1 - 基础精馏 (basic)")
@@ -24,15 +25,41 @@ else:
     print("⚠️ 输入无效，默认使用基础精馏。")
     mode = "basic"
 
-# ========== 2️⃣ 数据输入 ==========
-x_data = np.linspace(0, 0.98, 50)
-y_data = np.array([0.000, 0.135, 0.235, 0.311, 0.372, 0.421, 0.463, 0.499, 0.529, 0.556,
-                   0.580, 0.602, 0.622, 0.640, 0.656, 0.672, 0.686, 0.700, 0.713, 0.725,
-                   0.737, 0.748, 0.759, 0.769, 0.779, 0.789, 0.799, 0.808, 0.817, 0.826,
-                   0.835, 0.844, 0.853, 0.861, 0.870, 0.878, 0.886, 0.895, 0.903, 0.911,
-                   0.919, 0.927, 0.936, 0.944, 0.952, 0.960, 0.968, 0.976, 0.984, 0.992])
 
-vle = VLEData(x_data, y_data)
+# ========== 2️⃣ 气液平衡输入方式 ==========
+print("\n📊 请选择气液平衡数据来源：")
+print("1 - 实验数据 (输入或读取 x-y 数据)")
+print("2 - 理论模型 (自动根据 α 生成函数 y=αx/[1+(α−1)x])")
+vle_choice = input("请输入数字选择 [1/2]: ").strip()
+
+if vle_choice == "1":
+    print("\n✅ 使用实验数据模式（默认样例数据）")
+    x_data = np.array([0.000, 0.020, 0.040, 0.060, 0.080, 0.100, 0.120, 0.140, 0.160, 0.180,
+                       0.200, 0.220, 0.240, 0.260, 0.280, 0.300, 0.320, 0.340, 0.360, 0.380,
+                       0.400, 0.420, 0.440, 0.460, 0.480, 0.500, 0.520, 0.540, 0.560, 0.580,
+                       0.600, 0.620, 0.640, 0.660, 0.680, 0.700, 0.720, 0.740, 0.760, 0.780,
+                       0.800, 0.820, 0.840, 0.860, 0.880, 0.900, 0.920, 0.940, 0.960, 0.980])
+    y_data = np.array([0.000, 0.135, 0.235, 0.311, 0.372, 0.421, 0.463, 0.499, 0.529, 0.556,
+                       0.580, 0.602, 0.622, 0.640, 0.656, 0.672, 0.686, 0.700, 0.713, 0.725,
+                       0.737, 0.748, 0.759, 0.769, 0.779, 0.789, 0.799, 0.808, 0.817, 0.826,
+                       0.835, 0.844, 0.853, 0.861, 0.870, 0.878, 0.886, 0.895, 0.903, 0.911,
+                       0.919, 0.927, 0.936, 0.944, 0.952, 0.960, 0.968, 0.976, 0.984, 0.992])
+    vle = VLEData(x_data, y_data)
+
+else:
+    # 自动 Raoult 模型 y = αx / [1+(α−1)x]
+    print("\n🧠 理论气液平衡模型：Raoult 形式 y = α·x / [1 + (α - 1)x]")
+    alpha = float(input("请输入相对挥发度 α (默认 1.5): ") or 1.5)
+    print(f"✅ 已选择 α = {alpha:.3f}")
+
+    def theoretical_y(x):
+        return alpha * x / (1 + (alpha - 1) * x)
+
+    x_data = np.linspace(0, 1, 50)
+    y_data = np.clip([theoretical_y(x) for x in x_data], 0, 1)
+    vle = VLEData(x_data, y_data)
+    print("✅ 理论VLE函数已生成并载入。")
+
 
 # ========== 3️⃣ 参数输入 ==========
 if mode != "multiple":
@@ -42,7 +69,6 @@ if mode != "multiple":
     q = float(input("请输入进料热状态参数 q (默认 1.0): ") or 1.0)
     R = float(input("请输入回流比 R (输入 0 则自动计算，默认 0.6): ") or 0.6)
 
-    # --- 新增部分：进料体积、密度、Murphree效率输入 ---
     feed_volume_L = float(input("请输入进料体积 (L) (默认 100): ") or 100)
     feed_density_kg_per_L = float(input("请输入进料密度 (kg/L) (默认 0.95): ") or 0.95)
 
@@ -56,8 +82,10 @@ if mode != "multiple":
     else:
         consider_murphree = False
         EM_L = EM_V = None
+
 else:
     print("\n多效精馏模式：自动构建两个串联塔参数。\n")
+
 
 # ========== 4️⃣ 模式分支处理 ==========
 result_folder = create_result_folder("./results")
@@ -84,14 +112,9 @@ elif mode == "azeotropic":
     strength = float(input("请输入扰动强度（负值打破共沸，默认 -0.05）: ") or -0.05)
     vle = azeotropic_modifier(vle, azeo_x, azeo_y, strength)
 
-    spec = DistillationSpec(
-        xF=xF, q=q, xD=xD, xW=xW, R=R,
-        consider_murphree=consider_murphree,
-        EM_L=EM_L, EM_V=EM_V,
-        mode="azeotropic",
-        feed_volume_L=feed_volume_L,
-        feed_density_kg_per_L=feed_density_kg_per_L
-    )
+    spec = DistillationSpec(xF=xF, q=q, xD=xD, xW=xW, R=R,
+        consider_murphree=consider_murphree, EM_L=EM_L, EM_V=EM_V, mode="azeotropic",
+        feed_volume_L=feed_volume_L, feed_density_kg_per_L=feed_density_kg_per_L)
     engine = DistillationEngine(spec, vle)
     result = engine.run(result_folder)
     save_results(result, result_folder)
@@ -103,14 +126,9 @@ elif mode == "extractive":
     alpha_factor = float(input("请输入挥发度放大系数 (默认 1.3): ") or 1.3)
     vle = extractive_modifier(vle, solvent_ratio=solvent_ratio, alpha_factor=alpha_factor)
 
-    spec = DistillationSpec(
-        xF=xF, q=q, xD=xD, xW=xW, R=R,
-        consider_murphree=consider_murphree,
-        EM_L=EM_L, EM_V=EM_V,
-        mode="extractive",
-        feed_volume_L=feed_volume_L,
-        feed_density_kg_per_L=feed_density_kg_per_L
-    )
+    spec = DistillationSpec(xF=xF, q=q, xD=xD, xW=xW, R=R,
+        consider_murphree=consider_murphree, EM_L=EM_L, EM_V=EM_V, mode="extractive",
+        feed_volume_L=feed_volume_L, feed_density_kg_per_L=feed_density_kg_per_L)
     engine = DistillationEngine(spec, vle)
     result = engine.run(result_folder)
     save_results(result, result_folder)
@@ -118,12 +136,12 @@ elif mode == "extractive":
     print(f"✅ 萃取精馏计算完成，结果已保存至：{result_folder}")
 
 elif mode == "multiple":
-    from core.vle_data import VLEData
     print("👉 构建两个串联塔：第一效高压，第二效低压。")
 
     spec1 = DistillationSpec(xF=0.48, q=1.0, xD=0.90, xW=0.05, R=1.5, consider_murphree=True, EM_L=0.75)
     spec2 = DistillationSpec(xF=0.30, q=1.0, xD=0.85, xW=0.02, R=1.2, consider_murphree=True, EM_L=0.75)
 
+    from core.vle_data import VLEData
     vle1 = VLEData(x_data, y_data)
     vle2 = VLEData(x_data, y_data)
     system = MultiEffectSystem([spec1, spec2], [vle1, vle2], heat_efficiency=0.85)
