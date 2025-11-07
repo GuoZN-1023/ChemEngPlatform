@@ -1,4 +1,4 @@
-# 🌿 AssimilatePlatform — 气体吸收计算与可视化平台 / Gas Absorption Simulation Platform
+# AssimilatePlatform — 气体吸收计算与可视化平台
 
 > **AI4ChemEng Submodule**  
 > 一款基于 Python 的自动化气体吸收计算平台，支持 McCabe–Thiele 图形化分析、气液流量计算与数据导出。  
