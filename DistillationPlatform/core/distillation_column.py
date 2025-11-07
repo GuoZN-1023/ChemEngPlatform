@@ -18,24 +18,65 @@ class DistillationColumn:
 
     # ---------- pinch点 ----------
     def _find_pinch(self):
-        if abs(self.spec.q - 1.0) < 1e-12:
-            x_p = self.spec.xF
-            return x_p, self.vle.y_star(x_p)
+        """
+        寻找 q 线与平衡线的交点（pinch 点），提高精度：
+        - q=1 时直接垂线；
+        - 否则使用 scipy.optimize.minimize_scalar 精确最小化 |y*(x) - (mq*x + bq)|；
+        - 若 scipy 不可用则自动回退为高密度扫描法。
+        """
+        eps = 1e-12
+        q = float(self.spec.q)
+
+        if abs(q - 1.0) < eps:
+            # 饱和液体 → q 线垂直于 x=xF
+            x_p = float(self.spec.xF)
+            return x_p, float(self.vle.y_star(x_p))
+
         mq, bq = self.q_line()
-        xs = np.linspace(0, 1, 2001)
-        vals = [self.vle.y_star(x) - (mq * x + bq) for x in xs]
-        i = int(np.argmin(np.abs(vals)))
-        return xs[i], self.vle.y_star(xs[i])
+
+        def diff(x):
+            return abs(self.vle.y_star(x) - (mq * x + bq))
+
+        # 优先使用 scipy 精确优化
+        try:
+            from scipy.optimize import minimize_scalar
+            res = minimize_scalar(diff, bounds=(0.0, 1.0), method="bounded")
+            x_p = float(res.x)
+        except Exception:
+            # 回退方案：高分辨率扫描 + 二次细化
+            xs = np.linspace(0.0, 1.0, 5001)
+            vals = np.abs([self.vle.y_star(x) - (mq * x + bq) for x in xs])
+            i = int(np.argmin(vals))
+            i0 = max(i - 5, 0)
+            i1 = min(i + 5, len(xs) - 1)
+            x_zoom = np.linspace(xs[i0], xs[i1], 2001)
+            vals_zoom = np.abs([self.vle.y_star(x) - (mq * x + bq) for x in x_zoom])
+            x_p = float(x_zoom[int(np.argmin(vals_zoom))])
+
+        y_p = float(self.vle.y_star(x_p))
+        return x_p, y_p
 
     # ---------- Rmin ----------
     def compute_Rmin(self):
+        """
+        根据 pinch 点和塔顶点计算最小回流比 Rmin。
+        - 公式：m = (y_p - xD) / (x_p - xD)，Rmin = m / (1 - m)
+        - 自动避免分母过小、m 越界
+        """
         x_p, y_p = self._find_pinch()
-        if abs(x_p - self.spec.xD) < 1e-12:
-            m = 0.999999
+        xD = float(self.spec.xD)
+
+        denom = (x_p - xD)
+        if abs(denom) < 1e-10:
+            # 极端情况：pinch 点接近塔顶点 → 回流比趋于无穷
+            m = 1.0 - 1e-8
         else:
-            m = (y_p - self.spec.xD) / (x_p - self.spec.xD)
-        m = np.clip(m, 1e-6, 0.999999)
-        return m / (1.0 - m)
+            m = (y_p - xD) / denom
+
+        # 限制 m 在合理范围 (0,1)
+        m = float(np.clip(m, 1e-8, 1.0 - 1e-8))
+        Rmin = m / (1.0 - m)
+        return float(Rmin)
 
     # ---------- 操作线 ----------
     def operating_lines(self, R):
