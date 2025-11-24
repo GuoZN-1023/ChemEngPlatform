@@ -1,0 +1,55 @@
+{
+  "case_name": "interactive_case",
+  "inputs": {
+    "m": 0.55555556,
+    "YF": 0.04166666667,
+    "YN": 0.002,
+    "X0": 0.002,
+    "V": 96.0,
+    "L": 80.0,
+    "L_factor": 1.5,
+    "HETP": 0.5,
+    "max_stages_cap": 300,
+    "plot": true
+  },
+  "results": {
+    "Lmin": 52.16438399048827,
+    "L_used": 80.0,
+    "N_stair": 7,
+    "N_kremser": 7,
+    "N_used": 7,
+    "H_total_m": 3.5,
+    "absorbed_kmol_h": 3.80800000032,
+    "X1": 0.049600000004,
+    "gas_in_total_kmol_h": 100.00000000032,
+    "gas_out_total_kmol_h": 96.19200000000001,
+    "liq_in_total_kmol_h": 80.16,
+    "liq_out_total_kmol_h": 83.96800000032,
+    "components": {
+      "gas_in": {
+        "inert": 96.0,
+        "solute": 4.00000000032
+      },
+      "gas_out": {
+        "inert": 96.0,
+        "solute": 0.192
+      },
+      "liq_in": {
+        "solvent": 80.0,
+        "solute": 0.16
+      },
+      "liq_out": {
+        "solvent": 80.0,
+        "solute": 3.96800000032
+      }
+    }
+  },
+  "artifacts": {
+    "stage_data_csv": "stage_data.csv",
+    "stage_table_csv": "stage_table.csv",
+    "streams_csv": "streams.csv",
+    "streams_table_csv": "streams_table.csv",
+    "mt_plot": "mt_plot.png",
+    "log": "log.txt"
+  }
+}

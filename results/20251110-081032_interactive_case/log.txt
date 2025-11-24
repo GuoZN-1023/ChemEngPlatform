@@ -1,0 +1,10 @@
+[INFO] 2025-11-10T08:10:32.389440 === Absorption calculation started ===
+[INFO] 2025-11-10T08:10:32.390322 Config: {'m': 0.555556, 'YF': 0.0417, 'YN_target': 0.002, 'X0': 0.002, 'V': 96.0, 'L': 0.0, 'L_factor': 1.5, 'HETP': 0.5, 'max_stages_cap': 300, 'case_name': 'interactive_case', 'notes': '', 'plot': True}
+[INFO] 2025-11-10T08:10:32.390569 自动 L = 52.165386×1.50 = 78.248080
+[INFO] 2025-11-10T08:10:32.391284 stage_data.csv saved.
+[INFO] 2025-11-10T08:10:32.391690 stage_table.csv saved.
+[INFO] 2025-11-10T08:10:32.392128 streams.csv saved.
+[INFO] 2025-11-10T08:10:32.392529 streams_table.csv saved.
+[INFO] 2025-11-10T08:10:32.393186 summary.json saved.
+[INFO] 2025-11-10T08:10:33.015809 McCabe–Thiele plot saved: results/20251110-081032_interactive_case/mt_plot.png
+[INFO] 2025-11-10T08:10:33.015984 === Absorption calculation completed ===

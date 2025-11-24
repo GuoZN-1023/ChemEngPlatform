@@ -1,0 +1,13 @@
+{
+    "R_used": 0.5,
+    "stages_theory": 11,
+    "stages_real": 11,
+    "consider_murphree": false,
+    "efficiency_type": "none",
+    "EM_value": 1.0,
+    "achieved": true,
+    "xF": 0.95283468,
+    "xD": 0.998,
+    "xW": 0.05,
+    "q": 1.0
+}
